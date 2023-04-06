@@ -200,8 +200,20 @@ public class Interface {
 			text.append("programa compilado com sucesso");
 			messagesArea.setText(text.toString());
 		} catch (LexicalError e) {
-			if(lastLine == 0) {
-				lastLine = 1;
+			if (lastLine == 0) {
+				for (int i = 0; i < textLine.length; i++) {
+					if (!textLine[i].isEmpty()) {
+						lastLine = i + 1;
+						break;
+					}
+				}
+			} else {
+				for (int i = lastLine; i < textLine.length; i++) {
+					if (!textLine[i].isEmpty()) {
+						lastLine = i + 1;
+						break;
+					}
+				}
 			}
 			if (e.getMessage().equals(ScannerConstants.SCANNER_ERROR[0])) {
 				messagesArea.setText("Erro na linha " + lastLine + " - " + editor.getText().charAt(e.getPosition())
