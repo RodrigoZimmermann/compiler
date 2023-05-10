@@ -179,50 +179,49 @@ public class Interface {
 
 	private void compileButtonAction() {
 		Lexico lexico = new Lexico();
+		Sintatico sintatico = new Sintatico();
+		Semantico semantico = new Semantico();
 		lexico.setInput(editor.getText());
 
 		String[] textLine = editor.getText().split("\n");
-
-		int lastLine = 0;
+		int[] lengthPerLine = new int[textLine.length];
+        int lastLenght = 0;
+        for (int i = 0; i < textLine.length; i++) {
+        	lengthPerLine[i] = textLine[i].length() + lastLenght + 1;
+        	lastLenght += textLine[i].length() + 1;
+        }
+		
 		try {
-			Token t = null;
-			StringBuilder text = new StringBuilder();
-			text.append("Linha").append("\t").append("Classe").append("\t").append("\t").append("Lexema").append("\n");
-			while ((t = lexico.nextToken()) != null) {
-				for (int i = 0; i < textLine.length; i++) {
-					if (textLine[i].contains(t.getLexeme())) {
-						lastLine = i + 1;
-						text.append(lastLine).append("\t").append(checkIdConstans(t.getId())).append("\t")
-								.append(t.getLexeme()).append("\n");
-					}
-				}
-			}
-			text.append("programa compilado com sucesso");
-			messagesArea.setText(text.toString());
-		} catch (LexicalError e) {
-			if (lastLine == 0) {
-				for (int i = 0; i < textLine.length; i++) {
-					if (!textLine[i].isEmpty()) {
-						lastLine = i + 1;
-						break;
-					}
-				}
-			} else {
-				for (int i = lastLine; i < textLine.length; i++) {
-					if (!textLine[i].isEmpty()) {
-						lastLine = i + 1;
-						break;
-					}
-				}
-			}
-			if (e.getMessage().equals(ScannerConstants.SCANNER_ERROR[0])) {
-				messagesArea.setText("Erro na linha " + lastLine + " - " + editor.getText().charAt(e.getPosition())
-						+ " " + e.getMessage());
-			} else {
-				messagesArea.setText("Erro na linha " + lastLine + " - " + e.getMessage());
-			}
-		}
+			sintatico.parse(lexico, semantico); 
+			messagesArea.setText("programa compilado com sucesso");
+		 } catch (LexicalError e) {
+	            int linhaErro = getLineError(lengthPerLine, e.getPosition());
+
+	            if (e.getMessage().equals(ScannerConstants.SCANNER_ERROR[0])) {
+	            	messagesArea.setText("Erro na linha " + linhaErro + " - " + editor.getText().charAt(e.getPosition()) + " " + e.getMessage());
+	            } else {
+	            	messagesArea.setText("Erro na linha " + linhaErro + " - " + e.getMessage());
+	            }
+	        } catch (SyntaticError e) {
+	            int linhaErro = getLineError(lengthPerLine, e.getPosition());
+
+	            messagesArea.setText("Erro na linha " + linhaErro + " - encontrado " + (Objects.equals(sintatico.getToken(), "$") ? "EOF" : sintatico.getToken()) + " " + e.getMessage());
+	        } catch (SemanticError e) {
+	            System.out.println("Ocorreu um erro semantico");
+	        }
 	}
+		
+		  private int getLineError(int[] tamanhoPorLinha, int position) {
+		        int linhaErro = 0;
+		        for (int i = 0; i < tamanhoPorLinha.length; i++) {
+		            if (position + 1 <= tamanhoPorLinha[i]) {
+		                linhaErro = i + 1;
+		                break;
+		            }
+		        }
+
+		        return linhaErro;
+		    }
 
 	private String checkIdConstans(int id) {
 		StringBuilder name = new StringBuilder();

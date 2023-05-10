@@ -1,0 +1,168 @@
+#Options
+GenerateScanner = true
+GenerateParser = true
+Language = Java
+ScannerName = Lexico
+ParserName = Sintatico
+SemanticName = Semantico
+ScannerCaseSensitive = true
+ScannerTable = Compact
+Input = String
+Parser = LL
+#RegularDefinitions
+letrinha: [a-z]
+letrona: [A-Z]
+digito: [0-9]
+digitosemzero: [1-9]
+int: ({digitosemzero}({digito}? | {digito}? {digito}?)(\.{digito} {digito} {digito})*) |0 
+#Tokens
+//constante_int:
+constante_int: {int}
+
+//constante_float:
+constante_float: {int},{digito}+
+
+//constante_bin:
+constante_bin: 0(b|B)[0-1]+
+
+//constante_string:
+constante_string: \"[^\"\"\r\n\\]*\"
+
+//identificador
+id: (({letrinha} {letrona}?)+ | {letrona}({letrinha}{letrona}?)*) {digito}? {digito}?
+
+
+//palavra reservadas
+pr_and = id: "and"
+pr_check = id: "check"
+pr_else = id: "else"
+pr_end = id: "end"
+pr_false = id: "false"
+pr_if = id: "if"
+pr_not = id: "not"
+pr_or = id: "or"
+pr_read = id: "read"
+pr_true = id: "true"
+pr_write = id: "write"
+pr_wirteln = id: "writeln"
+
+//simbolo especiais
+","
+";"
+"="
+":"
+"("
+")"
+"=="
+"!="
+"<"
+"<="
+">"
+">="
+"+"
+"-"
+"*"
+"/"
+
+// caracteres de formatacao: reconhecer e ignorar
+:[\s\t\n]
+
+// comentarios: reconhecer e ignorar
+:! # [^\n]*
+
+//bloco
+:! \{\r\n[^\{\}]*\r\n\}
+
+
+#NonTerminals
+<programa>
+<lista_comandos>
+<lista_comandos_>
+<comando>
+<atribuicao>
+<atribuicao_>
+<entrada_dados>
+<saida_dados>
+<selecao>
+<selecao_>
+<repeticao>
+<repeticao_>
+<lista_identificadores>
+<lista_identificadores_>
+<lista_expressoes>
+<lista_expressoes_>
+<expressao>
+<expressao_>
+<elemento>
+<relacional>
+<relacional_>
+<aritmetica>
+<aritmetica_>
+<operador_relacional>
+<termo>
+<termo_>
+<fator>
+#Grammar
+<programa> ::= <lista_comandos>;
+
+//<lista_comandos> ::= <comando> ";" | <comando> ";" <lista_comandos>
+<lista_comandos> ::= <comando> ";" <lista_comandos_>;
+<lista_comandos_> ::= <lista_comandos> | î;
+
+
+<comando> ::= <atribuicao> | <entrada_dados> | <saida_dados> | <selecao> | <repeticao>;
+
+//<atribuicao> ::= <lista_identificadores> "=" <expressao> | <lista_identificadores> "=" <expressao> ":" pr_if <expressao>
+<atribuicao> ::= <lista_identificadores> "=" <expressao> <atribuicao_>; 
+<atribuicao_> ::= î | ":" pr_if <expressao>;
+
+<entrada_dados> ::= pr_read "(" <lista_identificadores> ")";
+<saida_dados> ::= pr_write "(" <lista_expressoes> ")" | pr_wirteln "(" <lista_expressoes> ")";
+
+//<lista_expressoes> ::= <expressao> | <expressao> "," <lista_expressoes>
+<lista_expressoes> ::= <expressao> <lista_expressoes_>;
+<lista_expressoes_> ::= î | "," <lista_expressoes>;
+
+//<lista_identificadores> ::= id | id "," <lista_identificadores>
+<lista_identificadores> ::= id <lista_identificadores_>;
+<lista_identificadores_> ::= î | "," <lista_identificadores>;
+
+//<selecao> ::= 	pr_if "(" <expressao> ")" <lista_comandos> pr_end |
+	//	pr_if "(" <expressao> ")" <lista_comandos> pr_else <lista_comandos> pr_end
+
+<selecao> ::= 	pr_if "(" <expressao> ")" <lista_comandos> <selecao_>;
+<selecao_> ::=  	pr_end | pr_else <lista_comandos> pr_end;
+
+
+//<repeticao> ::= 	pr_check "(" <expressao> ")" ":" pr_if pr_true <lista_comandos> pr_end |
+	//	pr_check "(" <expressao> ")" ":" pr_if pr_false <lista_comandos> pr_end
+
+<repeticao> ::= 	pr_check "(" <expressao> ")" ":" pr_if <repeticao_>;
+<repeticao_> ::= 	pr_true <lista_comandos> pr_end | pr_false <lista_comandos> pr_end;
+
+// Parte especifica pela professora
+<expressao>			::= <elemento> <expressao_>  ;
+<expressao_>			::= î | pr_and <elemento> <expressao_> | pr_or <elemento> <expressao_> ;
+<elemento>			::= <relacional> | pr_true | pr_false | pr_not <elemento> ;
+
+<relacional>			::= <aritmetica> <relacional_> ;
+<relacional_>			::= î | <operador_relacional> <aritmetica> ;
+<operador_relacional>	::= "==" | "!=" | "<" | "<=" | ">" | ">=" ;
+
+<aritmetica>			::= <termo> <aritmetica_>  ;
+<aritmetica_>			::= î | "+" <termo> <aritmetica_> | "-" <termo> <aritmetica_> ;
+
+<termo>			::= <fator> <termo_> ;
+<termo_>			::= î | "*" <fator> <termo_> | "/" <fator> <termo_> ;
+
+<fator>			::= id | 
+			    	    constante_int | 
+		   	    	    constante_float | 
+			    	    constante_bin |
+			    	    constante_string | 
+		   	    	    "(" <expressao> ")" |
+	    	  	    	    "+" <fator> | 
+	    		    	    "-" <fator> ;
+
+
+
