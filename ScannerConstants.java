@@ -1401,7 +1401,7 @@ public interface ScannerConstants
     {
     	"Símbolo inválido",//"Caractere não esperado",
         "",
-        "Erro identificando \"!=\"",
+        "! simbolo inválido",//"Erro identificando \"!=\"",
         "constante_string inválida",//"Erro identificando constante_string",
         "",
         "",

@@ -152,7 +152,7 @@ public interface ParserConstants
         "Esperado id",//"<lista_identificadores> inv�lido",
         "Esperado , = )",//"<lista_identificadores_> inv�lido",
         "Esperado expressão",//"<lista_expressoes> inv�lido", 
-        "Esperado expressão",//"<lista_expressoes_> inv�lido",
+        "Esperado , )",//"<lista_expressoes_> inv�lido",
         "Esperado expressão",//"<expressao> inv�lido",
         "Esperado expressão",//"<expressao_> inv�lido",
         "Esperado expressão",//"<elemento> inv�lido",
