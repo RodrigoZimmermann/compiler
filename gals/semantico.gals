@@ -103,7 +103,7 @@ pr_wirteln = id: "writeln"
 <termo_>
 <fator>
 #Grammar
-<programa> ::= <lista_comandos>;
+<programa> ::= #15 #21 <lista_comandos> #16 ;
 
 //<lista_comandos> ::= <comando> ";" | <comando> ";" <lista_comandos>
 <lista_comandos> ::= <comando> ";" <lista_comandos_>;
@@ -114,55 +114,55 @@ pr_wirteln = id: "writeln"
 
 //<atribuicao> ::= <lista_identificadores> "=" <expressao> | <lista_identificadores> "=" <expressao> ":" pr_if <expressao>
 <atribuicao> ::= <lista_identificadores> "=" <expressao> <atribuicao_>; 
-<atribuicao_> ::= î | ":" pr_if <expressao>;
+<atribuicao_> ::= #24 î | #25 ":" pr_if <expressao> #26 ;
 
-<entrada_dados> ::= pr_read "(" <lista_identificadores> ")";
-<saida_dados> ::= pr_write "(" <lista_expressoes> ")" | pr_wirteln "(" <lista_expressoes> ")";
+<entrada_dados> ::= pr_read "(" <lista_identificadores> #27 ")";
+<saida_dados> ::= pr_write "(" <lista_expressoes> ")" | pr_wirteln "(" <lista_expressoes> ")" #17 ;
 
 //<lista_expressoes> ::= <expressao> | <expressao> "," <lista_expressoes>
-<lista_expressoes> ::= <expressao> <lista_expressoes_>;
+<lista_expressoes> ::= <expressao> #14 <lista_expressoes_>;
 <lista_expressoes_> ::= î | "," <lista_expressoes>;
 
 //<lista_identificadores> ::= id | id "," <lista_identificadores>
-<lista_identificadores> ::= id <lista_identificadores_>;
+<lista_identificadores> ::= id #22 <lista_identificadores_>;
 <lista_identificadores_> ::= î | "," <lista_identificadores>;
 
 //<selecao> ::= 	pr_if "(" <expressao> ")" <lista_comandos> pr_end |
 	//	pr_if "(" <expressao> ")" <lista_comandos> pr_else <lista_comandos> pr_end
 
-<selecao> ::= 	pr_if "(" <expressao> ")" <lista_comandos> <selecao_>;
-<selecao_> ::=  	pr_end | pr_else <lista_comandos> pr_end;
+<selecao> ::= 	pr_if "(" <expressao> ")" #28 <lista_comandos> <selecao_>;
+<selecao_> ::=  	pr_end #29 |#30  pr_else <lista_comandos> pr_end #29;
 
 
 //<repeticao> ::= 	pr_check "(" <expressao> ")" ":" pr_if pr_true <lista_comandos> pr_end |
 	//	pr_check "(" <expressao> ")" ":" pr_if pr_false <lista_comandos> pr_end
 
-<repeticao> ::= 	pr_check "(" <expressao> ")" ":" pr_if <repeticao_>;
-<repeticao_> ::= 	pr_true <lista_comandos> pr_end | pr_false <lista_comandos> pr_end;
+<repeticao> ::= 	pr_check #31 "(" <expressao> ")" ":" pr_if <repeticao_> #32;
+<repeticao_> ::= 	pr_true <lista_comandos> pr_end #33 | pr_false <lista_comandos> pr_end #33;
 
 // Parte especifica pela professora
 <expressao>			::= <elemento> <expressao_>  ;
-<expressao_>			::= î | pr_and <elemento> <expressao_> | pr_or <elemento> <expressao_> ;
-<elemento>			::= <relacional> | pr_true | pr_false | pr_not <elemento> ;
+<expressao_>			::= î | pr_and <elemento> #18 <expressao_> | pr_or <elemento> #19 <expressao_> ;
+<elemento>			::= <relacional> | pr_true #11 | pr_false #12 | pr_not <elemento> #13 ;
 
 <relacional>			::= <aritmetica> <relacional_> ;
-<relacional_>			::= î | <operador_relacional> <aritmetica> ;
+<relacional_>			::= î | <operador_relacional> #9 <aritmetica> #10 ;
 <operador_relacional>	::= "==" | "!=" | "<" | "<=" | ">" | ">=" ;
 
 <aritmetica>			::= <termo> <aritmetica_>  ;
-<aritmetica_>			::= î | "+" <termo> <aritmetica_> | "-" <termo> <aritmetica_> ;
+<aritmetica_>			::= î | "+" <termo> #1 <aritmetica_> | "-" <termo> #2 <aritmetica_> ;
 
 <termo>			::= <fator> <termo_> ;
-<termo_>			::= î | "*" <fator> <termo_> | "/" <fator> <termo_> ;
+<termo_>			::= î | "*" <fator> #3 <termo_> | "/" <fator> #4 <termo_> ;
 
-<fator>			::= id | 
-			    	    constante_int | 
-		   	    	    constante_float | 
-			    	    constante_bin |
-			    	    constante_string | 
-		   	    	    "(" <expressao> ")" |
-	    	  	    	    "+" <fator> | 
-	    		    	    "-" <fator> ;
+<fator>			::= 	id #23 | 
+			    	constante_int #5 | 
+		   	    	constante_float #6 | 
+			    	constante_bin  |
+			    	constante_string #20 | 
+		   	    	"(" <expressao> ")" |
+	    	  	    	"+" <fator> | 
+	    		    	"-" <fator> #8 ;
 
 
 

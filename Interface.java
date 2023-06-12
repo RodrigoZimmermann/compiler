@@ -194,6 +194,15 @@ public class Interface {
 		try {
 			sintatico.parse(lexico, semantico); 
 			messagesArea.setText("programa compilado com sucesso");
+			
+			try {
+                String arquivoAtual = fileChooser.getSelectedFile().getAbsolutePath();
+                BufferedWriter bw = new BufferedWriter(new FileWriter(arquivoAtual.replace(".txt", "") + ".il"));
+                bw.write(semantico.getCodigo().toString());
+                bw.close();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
 		 } catch (LexicalError e) {
 	            int linhaErro = getLineError(lengthPerLine, e.getPosition());
 
@@ -207,7 +216,9 @@ public class Interface {
 
 	            messagesArea.setText("Erro na linha " + linhaErro + " - encontrado " + (Objects.equals(sintatico.getToken(), "$") ? "EOF" : sintatico.getToken()) + " " + e.getMessage());
 	        } catch (SemanticError e) {
-	            System.out.println("Ocorreu um erro semantico");
+	        	int linhaErro = getLineError(lengthPerLine, e.getPosition());
+
+	        	messagesArea.setText("Erro na linha: " + linhaErro + " - " + e.getMessage());
 	        }
 	}
 		
