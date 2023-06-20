@@ -137,6 +137,7 @@ public class Interface {
 				messagesArea.setText("");
 				statusBar.setText(arquivo.getAbsolutePath());
 			} catch (IOException e) {
+				messagesArea.setText("Erro no programa: \n" + e.getMessage());
 				e.printStackTrace();
 			}
 		}
@@ -157,6 +158,7 @@ public class Interface {
 
 				messagesArea.setText("");
 			} catch (IOException e1) {
+				messagesArea.setText("Erro no programa: \n" + e1.getMessage());
 				e1.printStackTrace();
 			}
 		} else {
@@ -171,6 +173,7 @@ public class Interface {
 					messagesArea.setText("");
 					statusBar.setText(fileChooser.getSelectedFile().getAbsolutePath() + ".txt");
 				} catch (IOException e1) {
+					messagesArea.setText("Erro no programa: \n" + e1.getMessage());
 					e1.printStackTrace();
 				}
 			}
@@ -185,75 +188,56 @@ public class Interface {
 
 		String[] textLine = editor.getText().split("\n");
 		int[] lengthPerLine = new int[textLine.length];
-        int lastLenght = 0;
-        for (int i = 0; i < textLine.length; i++) {
-        	lengthPerLine[i] = textLine[i].length() + lastLenght + 1;
-        	lastLenght += textLine[i].length() + 1;
-        }
-		
-		try {
-			sintatico.parse(lexico, semantico); 
-			messagesArea.setText("programa compilado com sucesso");
-			
-			try {
-                String arquivoAtual = fileChooser.getSelectedFile().getAbsolutePath();
-                BufferedWriter bw = new BufferedWriter(new FileWriter(arquivoAtual.replace(".txt", "") + ".il"));
-                bw.write(semantico.getCodigo().toString());
-                bw.close();
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            }
-		 } catch (LexicalError e) {
-	            int linhaErro = getLineError(lengthPerLine, e.getPosition());
-
-	            if (e.getMessage().equals(ScannerConstants.SCANNER_ERROR[0])) {
-	            	messagesArea.setText("Erro na linha " + linhaErro + " - " + editor.getText().charAt(e.getPosition()) + " " + e.getMessage());
-	            } else {
-	            	messagesArea.setText("Erro na linha " + linhaErro + " - " + e.getMessage());
-	            }
-	        } catch (SyntaticError e) {
-	            int linhaErro = getLineError(lengthPerLine, e.getPosition());
-
-	            messagesArea.setText("Erro na linha " + linhaErro + " - encontrado " + (Objects.equals(sintatico.getToken(), "$") ? "EOF" : sintatico.getToken()) + " " + e.getMessage());
-	        } catch (SemanticError e) {
-	        	int linhaErro = getLineError(lengthPerLine, e.getPosition());
-
-	        	messagesArea.setText("Erro na linha: " + linhaErro + " - " + e.getMessage());
-	        }
-	}
-		
-		  private int getLineError(int[] tamanhoPorLinha, int position) {
-		        int linhaErro = 0;
-		        for (int i = 0; i < tamanhoPorLinha.length; i++) {
-		            if (position + 1 <= tamanhoPorLinha[i]) {
-		                linhaErro = i + 1;
-		                break;
-		            }
-		        }
-
-		        return linhaErro;
-		    }
-
-	private String checkIdConstans(int id) {
-		StringBuilder name = new StringBuilder();
-		if (id == 2) {
-			name.append("constante_int").append("\t");
-		} else if (id == 3) {
-			name.append("constante_float").append("\t");
-		} else if (id == 4) {
-			name.append("constante_bin").append("\t");
-		} else if (id == 5) {
-			name.append("constante_string").append("\t");
-		} else if (id == 6) {
-			name.append("identificador").append("\t");
-		} else if (id >= 7 && id <= 18) {
-			name.append("palavra reservada");
-		} else if (id >= 19 && id <= 34) {
-			name.append("símbolo especial");
-		} else {
-			name.append("");
+		int lastLenght = 0;
+		for (int i = 0; i < textLine.length; i++) {
+			lengthPerLine[i] = textLine[i].length() + lastLenght + 1;
+			lastLenght += textLine[i].length() + 1;
 		}
-		return name.toString();
+
+		try {
+			sintatico.parse(lexico, semantico);
+			messagesArea.setText("programa compilado com sucesso");
+
+			try {
+				String arquivoAtual = fileChooser.getSelectedFile().getAbsolutePath();
+				BufferedWriter bw = new BufferedWriter(new FileWriter(arquivoAtual.replace(".txt", "") + ".il"));
+				bw.write(semantico.getCodigo().toString());
+				bw.close();
+			} catch (IOException e1) {
+				messagesArea.setText("Erro no programa: \n" + e1.getMessage());
+				e1.printStackTrace();
+			}
+		} catch (LexicalError e) {
+			int linhaErro = getLineError(lengthPerLine, e.getPosition());
+
+			if (e.getMessage().equals(ScannerConstants.SCANNER_ERROR[0])) {
+				messagesArea.setText("Erro na linha " + linhaErro + " - " + editor.getText().charAt(e.getPosition())
+						+ " " + e.getMessage());
+			} else {
+				messagesArea.setText("Erro na linha " + linhaErro + " - " + e.getMessage());
+			}
+		} catch (SyntaticError e) {
+			int linhaErro = getLineError(lengthPerLine, e.getPosition());
+
+			messagesArea.setText("Erro na linha " + linhaErro + " - encontrado "
+					+ (Objects.equals(sintatico.getToken(), "$") ? "EOF" : sintatico.getToken()) + " "
+					+ e.getMessage());
+		} catch (SemanticError e) {
+			int linhaErro = getLineError(lengthPerLine, e.getPosition());
+
+			messagesArea.setText("Erro na linha: " + linhaErro + " - " + e.getMessage());
+		}
+	}
+
+	private int getLineError(int[] tamanhoPorLinha, int position) {
+		int linhaErro = 0;
+		for (int i = 0; i < tamanhoPorLinha.length; i++) {
+			if (position + 1 <= tamanhoPorLinha[i]) {
+				linhaErro = i + 1;
+				break;
+			}
+		}
+		return linhaErro;
 	}
 
 	private void teamButtonAction() {
@@ -265,7 +249,6 @@ public class Interface {
 		keyManager.addKeyEventDispatcher(e -> {
 			boolean controlDownAndKeyPressed = e.isControlDown() && e.getID() == KeyEvent.KEY_PRESSED;
 			boolean keyPressed = e.getID() == KeyEvent.KEY_PRESSED;
-
 			if (controlDownAndKeyPressed && e.getKeyCode() == KeyEvent.VK_N) {
 				newButtonAction();
 			} else if (controlDownAndKeyPressed && e.getKeyCode() == KeyEvent.VK_O) {
