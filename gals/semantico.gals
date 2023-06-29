@@ -137,8 +137,8 @@ pr_wirteln = id: "writeln"
 //<repeticao> ::= 	pr_check "(" <expressao> ")" ":" pr_if pr_true <lista_comandos> pr_end |
 	//	pr_check "(" <expressao> ")" ":" pr_if pr_false <lista_comandos> pr_end
 
-<repeticao> ::= 	pr_check #31 "(" <expressao> ")" ":" pr_if <repeticao_> #32;
-<repeticao_> ::= 	pr_true <lista_comandos> pr_end #33 | pr_false <lista_comandos> pr_end #33;
+<repeticao> ::= 	pr_check #31 "(" <expressao> ")" ":" pr_if <repeticao_> ;
+<repeticao_> ::= 	pr_true #32 <lista_comandos> pr_end #33 | pr_false #32 <lista_comandos> pr_end #33;
 
 // Parte especifica pela professora
 <expressao>			::= <elemento> <expressao_>  ;

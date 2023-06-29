@@ -132,7 +132,7 @@ public class Semantico implements Constants {
 			acao31();
 			break;
 		case 32:
-			acao32();
+			acao32(token.getLexeme());
 			break;
 		case 33:
 			acao33();
@@ -143,26 +143,29 @@ public class Semantico implements Constants {
 		}
 	}
 
+	private void acao33() {
+		String rotuloDesempilhado2 = pilha_rotulos.pop();
+		String rotuloDesempilhado1 = pilha_rotulos.pop();
+		codigo.append("br " + rotuloDesempilhado1 + "\n");
+		codigo.append(rotuloDesempilhado2 + ":" + "\n");
+	}
+
+	private void acao32(String lexema) {
+		String rotulo = "r" + contadorRotulo;
+		if (lexema.equalsIgnoreCase("true")) {
+			codigo.append("brfalse " + rotulo + "\n");
+		} else {
+			codigo.append("brtrue " + rotulo + "\n");
+		}
+		pilha_rotulos.push(rotulo);
+		contadorRotulo++;
+	}
+
 	private void acao31() {
-		String tipo = pilha_tipos.pop();
 		String rotulo = "r" + contadorRotulo;
 		codigo.append(rotulo + ":" + "\n");
 		pilha_rotulos.push(rotulo);
 		contadorRotulo++;
-	}
-
-	private void acao32() {
-		String rotulo = "r" + contadorRotulo;
-		codigo.append("brtrue " + rotulo + "\n");
-		pilha_rotulos.push(rotulo);
-		contadorRotulo++;
-	}
-
-	private void acao33() {
-		String rotuloDesempilhado1 = pilha_rotulos.pop();
-		String rotuloDesempilhado2 = pilha_rotulos.pop();
-		codigo.append("br " + rotuloDesempilhado1 + "\n");
-		codigo.append(rotuloDesempilhado2 + ":" + "\n");
 	}
 
 	private void acao30() {
@@ -217,9 +220,9 @@ public class Semantico implements Constants {
 		codigo.append("brfalse " + rotulo + "\n");
 		contadorRotulo++;
 
-		String tipoVariavel = lista_id.get(lista_id.size());
+		String tipoVariavel = lista_id.get(lista_id.size() - 1);
 		codigo.append("ldloc " + tipoVariavel + "\n");
-		lista_id.remove(lista_id.size());
+		lista_id.remove(lista_id.size() - 1);
 
 		for (int i = 0; i < lista_id.size() - 1; i++) {
 			codigo.append("dup").append("\n");
@@ -230,10 +233,12 @@ public class Semantico implements Constants {
 			if (tipo.isBlank()) {
 				codigo.append(".locals(" + getTipoVariavel(tipoVariavel) + " " + identificador + ")");
 				tabela_simbolos.put(identificador, getTipoVariavel(tipoVariavel));
-			} else if (getTipoVariavel(tipoVariavel) == tipo) {
-				codigo.append("stloc " + identificador + "\n");
 			} else if (tipo == float64 && getTipoVariavel(tipoVariavel) == int64) {
-				codigo.append("conv.i8").append("\n");
+				codigo.append("stloc " + identificador + "\n");
+			} else if (getTipoVariavel(tipoVariavel) == tipo) {
+				if (tipo == int64) {
+					codigo.append("conv.i8").append("\n");
+				}
 				codigo.append("stloc " + identificador + "\n");
 			} else {
 				throw new SemanticError(" tipos incompatíveis em comando de atribuição");
@@ -284,10 +289,12 @@ public class Semantico implements Constants {
 					codigo.append("conv.i8").append("\n");
 				}
 				codigo.append("stloc " + identificador + "\n");
-			} else if (tipoPilha == tipo) {
-				codigo.append("stloc " + identificador + "\n");
 			} else if (tipo == float64 && tipoPilha == int64) {
-				codigo.append("conv.i8").append("\n");
+				codigo.append("stloc " + identificador + "\n");
+			} else if (tipoPilha == tipo) {
+				if (tipo == int64) {
+					codigo.append("conv.i8").append("\n");
+				}
 				codigo.append("stloc " + identificador + "\n");
 			} else {
 				throw new SemanticError(" tipos incompatíveis em comando de atribuição");
